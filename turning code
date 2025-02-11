@@ -1,4 +1,4 @@
-// Motor Pin Definitions (based on the new wiring)
+// Motor Pin Definitions (based on Nathan's wiring)
 const int enA = 11;  // PWM enable pin for motor A
 const int in1 = 8;   // Direction control pin 1 for motor A
 const int in2 = 9;   // Direction control pin 2 for motor A
@@ -6,9 +6,9 @@ const int enB = 10;  // PWM enable pin for motor B
 const int in3 = 12;  // Direction control pin 1 for motor B
 const int in4 = 13;  // Direction control pin 2 for motor B
 
-// Movement parameters
-float wheelDiameter = 0.1;  // Diameter of the wheels (meters)
-float wheelBase = 0.2;      // Distance between the two wheels (meters)
+// Movement parameters (already adjusted to our car)
+float wheelDiameter = 0.0675;  // Diameter of the wheels (meters)
+float wheelBase = 0.19685;      // Distance between the two wheels (front and back) (meters)
 
 // Function to setup motors and pins
 void setup() {
@@ -20,12 +20,15 @@ void setup() {
   pinMode(in4, OUTPUT);
   pinMode(enB, OUTPUT);
 
-  // Start motors with PWM (set speed to maximum for testing)
-  analogWrite(enA, 255);  // Maximum speed for motor A
-  analogWrite(enB, 255);  // Maximum speed for motor B
+  // Start motors with PWM (currently set at 1/2 speed..1/4 speed would be around 64)
+  
+  analogWrite(enA, 150);  // Half speed for motor A
+  analogWrite(enB, 150);  // Half speed for motor B
 }
 
 // Function to stop motors
+// This function stops the motors. You don't need to change anything here unless you want to stop the motors differently (e.g., by reversing the direction).
+
 void stopMotors() {
   digitalWrite(in1, LOW);
   digitalWrite(in2, LOW);
