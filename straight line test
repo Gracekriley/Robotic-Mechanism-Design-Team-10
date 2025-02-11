@@ -1,0 +1,77 @@
+// Motor Pin Definitions (based on Nathan's wiring)
+// Motor A is related to the Left Motor
+// Motor B is related to the Right Motor
+const int enA = 11;  // PWM enable pin for motor A
+const int in1 = 8;   // Direction control pin 1 for motor A
+const int in2 = 9;   // Direction control pin 2 for motor A
+const int enB = 10;  // PWM enable pin for motor B
+const int in3 = 12;  // Direction control pin 1 for motor B
+const int in4 = 13;  // Direction control pin 2 for motor B
+
+// Movement parameters (already adjusted to our car)
+float wheelDiameter = 0.0675;  // Diameter of the wheels (meters)
+float wheelBase = 0.19685;      // Distance between the two wheels (front and back) (meters)
+float pi = 3.1415925;
+float wheelCircumference = pi * wheelDiameter;
+float movementCoefficient = 1000;
+float timeDelay = 100;
+float speedCorrectionA = 5/6;
+
+void setup() {
+  delay(5000);
+  // Set motor controller pins as OUTPUT
+  pinMode(enA, OUTPUT);
+  pinMode(in1, OUTPUT);
+  pinMode(in2, OUTPUT);
+  pinMode(in3, OUTPUT);
+  pinMode(in4, OUTPUT);
+  pinMode(enB, OUTPUT);
+
+  // Start motors with PWM (currently set at 1/2 speed..1/4 speed would be around 64)
+  
+  analogWrite(enA, 80);  // Half speed for motor A
+  analogWrite(enB, 80);  // Half speed for motor B
+}
+
+void stopMotors() {
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, LOW);
+
+  //stop all motion
+  analogWrite(enA, 0);
+  analogWrite(enB, 0);
+}
+
+void forwardMotion(float distance){
+  float revolutions = distance/wheelCircumference;
+  analogWrite(enA, 0);
+  analogWrite(enB, 0);
+
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH);
+
+  int Bspeed = 100;
+  int Aspeed = int(90);
+  analogWrite(enB, Bspeed);
+  delay(timeDelay);
+  analogWrite(enA, Aspeed);
+  
+
+  long timer = millis();
+  while( (millis() - timer) < (revolutions * movementCoefficient)){
+
+  }
+
+  stopMotors();
+}
+
+void loop() {
+  forwardMotion(1.0);
+  while(true){
+    stopMotors();
+  }
+}
