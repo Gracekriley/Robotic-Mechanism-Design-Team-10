@@ -72,6 +72,8 @@ void turn(float angle) {
   digitalWrite(in4, HIGH);
 
   // Adjust the delay based on the turning speed of the robot
+ // need to experiment with the turnDelay value to adjust the turning speed, depending on your robot's physical characteristics.
+
   int turnDelay = (angle / 90.0) * 1000;  // Adjust for proper turning speed
   delay(turnDelay);  // Wait for the robot to complete the turn
 }
