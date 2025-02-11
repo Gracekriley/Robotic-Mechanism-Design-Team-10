@@ -1,0 +1,116 @@
+// Motor Pins (adjust these according to your connections)
+const int motorA_ena = 9;  // Enable pin for motor A
+const int motorA_in1 = 2;  // Input pin 1 for motor A
+const int motorA_in2 = 3;  // Input pin 2 for motor A
+const int motorB_ena = 10; // Enable pin for motor B
+const int motorB_in3 = 4;  // Input pin 1 for motor B
+const int motorB_in4 = 5;  // Input pin 2 for motor B
+
+// Movement parameters
+float wheelDiameter = 0.1;  // Diameter of the wheels (meters)
+float wheelBase = 0.2;      // Distance between the two wheels (meters)
+
+// Function to setup motors and pins
+void setup() {
+  pinMode(motorA_ena, OUTPUT);
+  pinMode(motorA_in1, OUTPUT);
+  pinMode(motorA_in2, OUTPUT);
+  pinMode(motorB_ena, OUTPUT);
+  pinMode(motorB_in3, OUTPUT);
+  pinMode(motorB_in4, OUTPUT);
+
+  // Start motors with PWM (use appropriate speed values)
+  analogWrite(motorA_ena, 255);  // Maximum speed
+  analogWrite(motorB_ena, 255);  // Maximum speed
+}
+
+// Function to move the robot forward for a given distance (in meters)
+void moveForward(float distance) {
+  // Distance the robot moves per revolution (circumference of the wheel)
+  float wheelCircumference = 3.14159 * wheelDiameter;
+  
+  // Number of wheel revolutions needed to travel the specified distance
+  int revolutions = distance / wheelCircumference;
+
+  // Motor direction and movement for forward motion
+  digitalWrite(motorA_in1, HIGH);
+  digitalWrite(motorA_in2, LOW);
+  digitalWrite(motorB_in3, HIGH);
+  digitalWrite(motorB_in4, LOW);
+
+  // Rotate wheels for the required revolutions
+  // Adjust based on your system's speed and time for a full revolution
+  delay(revolutions * 1000);  // Delay for the duration of movement (to be calibrated)
+}
+
+// Function to turn the robot in place for a specified angle (in degrees)
+void turn(float angle) {
+  // To turn the robot in place, we reverse one motor's direction
+  digitalWrite(motorA_in1, HIGH);
+  digitalWrite(motorA_in2, LOW);
+  digitalWrite(motorB_in3, LOW);
+  digitalWrite(motorB_in4, HIGH);
+
+  // Adjust the delay based on the turning speed of the robot
+  int turnDelay = (angle / 360.0) * 1000;  // Adjust for proper turning speed
+  delay(turnDelay);  // Wait for the robot to complete the turn
+}
+
+// Function to trace a circle with a given radius (in meters)
+void traceCircle(float radius) {
+  // Calculate the circle's circumference
+  float circleCircumference = 2 * 3.14159 * radius;
+
+  // Move forward in a circle
+  moveForward(circleCircumference);
+
+  // Turn the robot in place by 90 degrees three times (3 full rotations for a circle)
+  for (int i = 0; i < 3; i++) {
+    turn(90);  // Turn by 90 degrees each time
+  }
+}
+
+// Function to trace a rectangle (X by Y meters)
+void traceRectangle(float X, float Y) {
+  // Move forward along one side (X)
+  moveForward(X);
+
+  // Turn 90 degrees to follow the next side
+  turn(90);
+  
+  // Move forward along the other side (Y)
+  moveForward(Y);
+
+  // Turn 90 degrees to follow the next side
+  turn(90);
+
+  // Repeat for the remaining sides
+  moveForward(X);
+  turn(90);
+  moveForward(Y);
+  turn(90);  // Complete the rectangle loop
+}
+
+void loop() {
+  // Example inputs for circle and rectangle paths
+  float X = 1.0; // Example radius for circle
+  float Y = 2.0; // Example length of rectangle
+  float Z = 1.5; // Example width of rectangle
+  
+  // Circle path (3 full circles with the specified radius)
+  traceCircle(X);
+  
+  delay(1000);  // Short delay before starting the rectangle path
+  
+  // Rectangle path (trace the rectangle with specified X and Y dimensions)
+  traceRectangle(Y, Z);
+  
+  // End of loop, robot will stop here
+  while (true) {
+    // Do nothing, stop the robot after finishing the paths
+    digitalWrite(motorA_in1, LOW);
+    digitalWrite(motorA_in2, LOW);
+    digitalWrite(motorB_in3, LOW);
+    digitalWrite(motorB_in4, LOW);
+  }
+}
