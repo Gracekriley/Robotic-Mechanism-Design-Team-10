@@ -1,10 +1,10 @@
-// Motor Pins (adjust these according to your connections)
-const int motorA_ena = 9;  // Enable pin for motor A
-const int motorA_in1 = 2;  // Input pin 1 for motor A
-const int motorA_in2 = 3;  // Input pin 2 for motor A
-const int motorB_ena = 10; // Enable pin for motor B
-const int motorB_in3 = 4;  // Input pin 1 for motor B
-const int motorB_in4 = 5;  // Input pin 2 for motor B
+// Motor Pin Definitions (based on the new wiring)
+const int enA = 11;  // PWM enable pin for motor A
+const int in1 = 8;   // Direction control pin 1 for motor A
+const int in2 = 9;   // Direction control pin 2 for motor A
+const int enB = 10;  // PWM enable pin for motor B
+const int in3 = 12;  // Direction control pin 1 for motor B
+const int in4 = 13;  // Direction control pin 2 for motor B
 
 // Movement parameters
 float wheelDiameter = 0.1;  // Diameter of the wheels (meters)
@@ -12,47 +12,64 @@ float wheelBase = 0.2;      // Distance between the two wheels (meters)
 
 // Function to setup motors and pins
 void setup() {
-  pinMode(motorA_ena, OUTPUT);
-  pinMode(motorA_in1, OUTPUT);
-  pinMode(motorA_in2, OUTPUT);
-  pinMode(motorB_ena, OUTPUT);
-  pinMode(motorB_in3, OUTPUT);
-  pinMode(motorB_in4, OUTPUT);
+  // Set motor controller pins as OUTPUT
+  pinMode(enA, OUTPUT);
+  pinMode(in1, OUTPUT);
+  pinMode(in2, OUTPUT);
+  pinMode(in3, OUTPUT);
+  pinMode(in4, OUTPUT);
+  pinMode(enB, OUTPUT);
 
-  // Start motors with PWM (use appropriate speed values)
-  analogWrite(motorA_ena, 255);  // Maximum speed
-  analogWrite(motorB_ena, 255);  // Maximum speed
+  // Start motors with PWM (set speed to maximum for testing)
+  analogWrite(enA, 255);  // Maximum speed for motor A
+  analogWrite(enB, 255);  // Maximum speed for motor B
+}
+
+// Function to stop motors
+void stopMotors() {
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, LOW);
+
+  // Optionally, set the enable pins to 0 to stop motors
+  analogWrite(enA, 0);
+  analogWrite(enB, 0);
 }
 
 // Function to move the robot forward for a given distance (in meters)
 void moveForward(float distance) {
   // Distance the robot moves per revolution (circumference of the wheel)
   float wheelCircumference = 3.14159 * wheelDiameter;
-  
+
   // Number of wheel revolutions needed to travel the specified distance
   int revolutions = distance / wheelCircumference;
 
   // Motor direction and movement for forward motion
-  digitalWrite(motorA_in1, HIGH);
-  digitalWrite(motorA_in2, LOW);
-  digitalWrite(motorB_in3, HIGH);
-  digitalWrite(motorB_in4, LOW);
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, HIGH);
+  digitalWrite(in4, LOW);
 
-  // Rotate wheels for the required revolutions
-  // Adjust based on your system's speed and time for a full revolution
-  delay(revolutions * 1000);  // Delay for the duration of movement (to be calibrated)
+  // Move forward for the calculated distance (in milliseconds)
+  unsigned long startTime = millis();
+  while (millis() - startTime < revolutions * 1000) { // Adjust time multiplier for correct motion
+    // Keep moving forward until the time for required revolutions has passed
+  }
+
+  stopMotors();  // Stop after the movement
 }
 
 // Function to turn the robot in place for a specified angle (in degrees)
 void turn(float angle) {
-  // To turn the robot in place, we reverse one motor's direction
-  digitalWrite(motorA_in1, HIGH);
-  digitalWrite(motorA_in2, LOW);
-  digitalWrite(motorB_in3, LOW);
-  digitalWrite(motorB_in4, HIGH);
+  // To turn the robot in place, reverse one motor's direction
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH);
 
   // Adjust the delay based on the turning speed of the robot
-  int turnDelay = (angle / 360.0) * 1000;  // Adjust for proper turning speed
+  int turnDelay = (angle / 90.0) * 1000;  // Adjust for proper turning speed
   delay(turnDelay);  // Wait for the robot to complete the turn
 }
 
@@ -77,7 +94,7 @@ void traceRectangle(float X, float Y) {
 
   // Turn 90 degrees to follow the next side
   turn(90);
-  
+
   // Move forward along the other side (Y)
   moveForward(Y);
 
@@ -108,9 +125,6 @@ void loop() {
   // End of loop, robot will stop here
   while (true) {
     // Do nothing, stop the robot after finishing the paths
-    digitalWrite(motorA_in1, LOW);
-    digitalWrite(motorA_in2, LOW);
-    digitalWrite(motorB_in3, LOW);
-    digitalWrite(motorB_in4, LOW);
+    stopMotors();
   }
 }
